@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>112級畢業專題校外展《扉》開幕邀請函</title>
+  <title> 聯大文創112級畢業專題校外展《扉》開幕邀請函</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Google Fonts -->
@@ -308,20 +308,41 @@
     }
 
     function copyInvitationUrl() {
-      const u1 = document.getElementById('inputUnit1').value;
-      const n = document.getElementById('inputName').value;
-      const t = document.getElementById('inputTitle').value;
-      updateUrlParams(u1, n, t);
+  const u1 = document.getElementById('inputUnit1').value;
+  const n = document.getElementById('inputName').value;
+  const t = document.getElementById('inputTitle').value;
+  
+  // 1. 先更新網址參數與頁面預覽
+  updateUrlParams(u1, n, t);
 
-      const dummy = document.createElement('input');
-      document.body.appendChild(dummy);
-      dummy.value = window.location.href;
-      dummy.select();
-      document.execCommand('copy');
-      document.body.removeChild(dummy);
+  // 2. 將網址經由 decodeURIComponent 解碼回中文
+  const rawUrl = window.location.href;
+  const chineseUrl = decodeURIComponent(rawUrl);
 
-      showToast('已複製專屬邀請網址至剪貼簿！');
-    }
+  // 3. 複製解碼後的中文網址至剪貼簿
+  if (navigator.clipboard && window.isSecureContext) {
+    // 優先採用現代 Clipboard API
+    navigator.clipboard.writeText(chineseUrl).then(() => {
+      showToast('已複製中文專屬邀請網址！');
+    }).catch(() => {
+      fallbackCopyText(chineseUrl);
+    });
+  } else {
+    // 備用複製方案
+    fallbackCopyText(chineseUrl);
+  }
+}
+
+// 備用複製工具函式
+function fallbackCopyText(text) {
+  const dummy = document.createElement('textarea');
+  document.body.appendChild(dummy);
+  dummy.value = text;
+  dummy.select();
+  document.execCommand('copy');
+  document.body.removeChild(dummy);
+  showToast('已複製中文專屬邀請網址！');
+}
 
     function openAdminModal() {
       const modal = document.getElementById('adminModal');
